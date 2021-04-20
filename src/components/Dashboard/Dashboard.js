@@ -3,6 +3,9 @@ import { Bar } from 'react-chartjs-2';
 
 const Dashboard = () => {
   const [length, setLength] = useState(0);
+  const [positiveWords, setPositiveWords] = useState(0);
+  const [negativeWords, setNegativeWords] = useState(0);
+  const [recommendations, setRecommendations] = useState([]);
 
   useEffect(() => {
     setLength(localStorage.getItem('length'));
@@ -46,13 +49,6 @@ const Dashboard = () => {
     },
   };
 
-  const [positiveWords, setPositiveWords] = useState(0);
-  const [negativeWords, setNegativeWords] = useState(0);
-
-  if (length === 38) {
-    setPositiveWords(5);
-    setNegativeWords(6);
-  }
   return length === 0 ? (
     <div></div>
   ) : (
