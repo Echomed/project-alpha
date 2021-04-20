@@ -1,0 +1,14 @@
+---
+declared-services:
+    sttcp-speech-to-text:
+        label: speech_to_text
+        plan: lite
+applications:
+- path: .
+  memory: 256M
+  instances: 1
+  name: speech-to-text-code-pattern
+  buildpacks:
+  - sdk-for-nodejs
+  services:
+  - sttcp-speech-to-text

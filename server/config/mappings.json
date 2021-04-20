@@ -1,0 +1,37 @@
+{
+  "speechToText_apikey": {
+    "searchPatterns": [
+      "file:/server/localdev-config.json:$.speechToText_apikey"
+    ]
+  },
+  "speechToText_iam_apikey_description": {
+    "searchPatterns": [
+      "file:/server/localdev-config.json:$.speechToText_iam_apikey_description"
+    ]
+  },
+  "speechToText_iam_apikey_name": {
+    "searchPatterns": [
+      "file:/server/localdev-config.json:$.speechToText_iam_apikey_name"
+    ]
+  },
+  "speechToText_iam_role_crn": {
+    "searchPatterns": [
+      "file:/server/localdev-config.json:$.speechToText_iam_role_crn"
+    ]
+  },
+  "speechToText_iam_serviceid_crn": {
+    "searchPatterns": [
+      "file:/server/localdev-config.json:$.speechToText_iam_serviceid_crn"
+    ]
+  },
+  "speechToText_url": {
+    "searchPatterns": [
+      "file:/server/localdev-config.json:$.speechToText_url"
+    ]
+  },
+  "speechToText_serviceInfo": {
+    "searchPatterns": [
+      "file:/server/localdev-config.json:$.speechToText_serviceInfo"
+    ]
+  }
+}
