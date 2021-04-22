@@ -4,9 +4,11 @@
   "proxy": "http://localhost:5000",
   "private": true,
   "dependencies": {
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "chart.js": "^2.9.4",
     "concurrently": "^5.3.0",
+    "cors": "^2.8.5",
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
     "es6-promise": "^4.2.8",
@@ -19,6 +21,7 @@
     "morgan": "^1.10.0",
     "react-chartjs-2": "^2.11.1",
     "react-router-dom": "^5.2.0",
+    "uuidv4": "^6.2.7",
     "vcap_services": "^0.7.1",
     "watson-speech": "^0.39.0"
   },

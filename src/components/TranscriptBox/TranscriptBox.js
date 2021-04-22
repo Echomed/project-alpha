@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { TooltipDefinition } from 'carbon-components-react';
 import KeywordTooltip from '../KeywordTooltip';
@@ -66,7 +66,13 @@ const mapTranscriptTextToElements = (text, keywordInfo, totalIndex) => {
   return finalSentenceArray;
 };
 
-export const TranscriptBox = ({ keywordInfo, transcriptArray, getLength }) => {
+export const TranscriptBox = ({
+  keywordInfo,
+  transcriptArray,
+  getLength,
+  getText,
+}) => {
+  const [textToPost, setTextToPost] = useState('');
   return (
     <div className="transcript-box">
       {transcriptArray.map((transcriptItem, overallIndex) => {
@@ -76,9 +82,17 @@ export const TranscriptBox = ({ keywordInfo, transcriptArray, getLength }) => {
           keywordInfo,
           overallIndex,
         );
-        let characters = parsedTextElements.map((element) => element.text);
-        characters = characters.filter((element) => element != undefined);
-        getLength(characters.join('').length);
+        // let characters = [];
+        // let characters = parsedTextElements.map((element) => element.text);
+        // characters = characters.filter((element) => element != undefined);
+        // getText(characters.join(''));
+        // getLength(characters.join('').length);
+
+        const result = parsedTextElements.map((element) => element?.text);
+
+        // console.log('new line' + result);
+
+        let randomString = '';
 
         return (
           <div key={`transcript-${overallIndex}`}>
@@ -94,7 +108,13 @@ export const TranscriptBox = ({ keywordInfo, transcriptArray, getLength }) => {
                 return null;
               }
 
+              setTextToPost((prev) => `${prev}${element.text}`);
+              console.log('NEW LINE' + textToPost);
+
               if (element.type === 'normal') {
+                // console.log('NEW LINE ' + element.text);
+                // characters.push(element.text);
+                // console.log('NEW LINE ' + characters.join(''));
                 return (
                   <>
                     <span

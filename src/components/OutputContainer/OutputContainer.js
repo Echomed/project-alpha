@@ -4,6 +4,8 @@ import { FormGroup, Tile } from 'carbon-components-react';
 import AudioWave from '../AudioWave';
 import TranscriptBox from '../TranscriptBox';
 import { Link } from 'react-router-dom';
+import styles from './outputcontainer.module.css';
+import axios from 'axios';
 
 export const OutputContainer = ({
   audioAnalyzer,
@@ -17,9 +19,24 @@ export const OutputContainer = ({
 }) => {
   const [length, setLength] = useState(0);
 
+  let textToPost = '';
+
+  const handleClick = () => {
+    axios
+      .post('http://localhost:5000/postText', {
+        text: textToPost,
+      })
+      .then(({ data }) => console.log(data))
+      .catch((error) => console.log(error));
+  };
+
   const getLength = (len) => {
     setLength(len);
     localStorage.setItem('length', len);
+  };
+
+  const getText = (text) => {
+    textToPost = text;
   };
   return (
     <Tile className="output-container">
@@ -39,12 +56,17 @@ export const OutputContainer = ({
           keywordInfo={keywordInfo}
           transcriptArray={transcriptArray}
           getLength={getLength}
+          getText={getText}
         />
       </FormGroup>
       {length !== 0 ? (
-        <Link to="/dashboard">
-          <button type="button">Go to Dashboard</button>
-        </Link>
+        <button
+          className={styles.goToDashboard}
+          type="button"
+          onClick={handleClick}
+        >
+          Go to Dashboard
+        </button>
       ) : (
         <div></div>
       )}

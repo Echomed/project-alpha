@@ -2,19 +2,32 @@ const { Cp4dTokenManager, IamTokenManager } = require('ibm-watson/auth');
 const path = require('path');
 const express = require('express');
 const vcapServices = require('vcap_services');
+const fs = require('fs');
+const { uuid } = require('uuidv4');
+const cors = require('cors');
 const app = express();
+
+app.use(cors());
 require('./config/express')(app);
 
 // For starter kit env.
 require('dotenv').config({
-  silent: true
+  silent: true,
 });
-const skitJson = JSON.parse(process.env.service_watson_speech_to_text || "{}");
+const skitJson = JSON.parse(process.env.service_watson_speech_to_text || '{}');
 const vcapCredentials = vcapServices.getCredentials('speech_to_text');
 
 // Look for credentials in all the possible places
-const apikey = process.env.SPEECH_TO_TEXT_APIKEY || process.env.SPEECHTOTEXT_APIKEY || vcapCredentials?.apikey || skitJson?.apikey;
-const url = process.env.SPEECH_TO_TEXT_URL || process.env.SPEECHTOTEXT_URL || vcapCredentials?.url || skitJson?.url;
+const apikey =
+  process.env.SPEECH_TO_TEXT_APIKEY ||
+  process.env.SPEECHTOTEXT_APIKEY ||
+  vcapCredentials?.apikey ||
+  skitJson?.apikey;
+const url =
+  process.env.SPEECH_TO_TEXT_URL ||
+  process.env.SPEECHTOTEXT_URL ||
+  vcapCredentials?.url ||
+  skitJson?.url;
 
 let bearerToken = process.env.SPEECH_TO_TEXT_BEARER_TOKEN;
 
@@ -32,13 +45,14 @@ if (sttAuthType === 'cp4d') {
     username: process.env.SPEECH_TO_TEXT_USERNAME,
     password: process.env.SPEECH_TO_TEXT_PASSWORD,
     url: process.env.SPEECH_TO_TEXT_AUTH_URL,
-    disableSslVerification: process.env.SPEECH_TO_TEXT_AUTH_DISABLE_SSL || false
+    disableSslVerification:
+      process.env.SPEECH_TO_TEXT_AUTH_DISABLE_SSL || false,
   });
 } else if (sttAuthType === 'iam') {
   try {
     tokenManager = new IamTokenManager({ apikey });
   } catch (err) {
-    console.log("Error: ", err);
+    console.log('Error: ', err);
   }
 } else if (sttAuthType === 'bearertoken') {
   console.log('SPEECH_TO_TEXT_AUTH_TYPE=bearertoken is for dev use only.');
@@ -76,7 +90,7 @@ const getToken = async () => {
       };
     }
   } catch (err) {
-    console.log("Error: ", err);
+    console.log('Error: ', err);
     tokenResponse = {
       ...tokenResponse,
       error: {
@@ -108,6 +122,19 @@ app.get('/api/auth', async (_, res, next) => {
   } else {
     return res.json(token);
   }
+});
+
+app.post('/postText', (req, res) => {
+  const { text } = req.body;
+
+  console.log(text);
+
+  fs.writeFile(`./generatedFiles/${uuid()}.txt`, text, function (err) {
+    if (err) {
+      return console.log(err);
+    }
+    res.send('The file was saved!');
+  });
 });
 
 // error-handler settings for all other routes
