@@ -3,9 +3,6 @@ import PropTypes from 'prop-types';
 import { FormGroup, Tile } from 'carbon-components-react';
 import AudioWave from '../AudioWave';
 import TranscriptBox from '../TranscriptBox';
-import { Link } from 'react-router-dom';
-import styles from './outputcontainer.module.css';
-import axios from 'axios';
 
 export const OutputContainer = ({
   audioAnalyzer,
@@ -20,15 +17,6 @@ export const OutputContainer = ({
   const [length, setLength] = useState(0);
 
   let textToPost = '';
-
-  const handleClick = () => {
-    axios
-      .post('http://localhost:5000/postText', {
-        text: textToPost,
-      })
-      .then(({ data }) => console.log(data))
-      .catch((error) => console.log(error));
-  };
 
   const getLength = (len) => {
     setLength(len);
@@ -59,17 +47,6 @@ export const OutputContainer = ({
           getText={getText}
         />
       </FormGroup>
-      {length !== 0 ? (
-        <button
-          className={styles.goToDashboard}
-          type="button"
-          onClick={handleClick}
-        >
-          Go to Dashboard
-        </button>
-      ) : (
-        <div></div>
-      )}
     </Tile>
   );
 };

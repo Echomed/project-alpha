@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { TooltipDefinition } from 'carbon-components-react';
+import { Button, TooltipDefinition } from 'carbon-components-react';
 import KeywordTooltip from '../KeywordTooltip';
 import { createWordRegex } from './utils';
+import axios from 'axios';
 
 const mapTranscriptTextToElements = (text, keywordInfo, totalIndex) => {
   let finalSentenceArray = [];
@@ -72,81 +73,93 @@ export const TranscriptBox = ({
   getLength,
   getText,
 }) => {
-  const [textToPost, setTextToPost] = useState('');
+  const textDiv = useRef(null);
+  const handleGo = () => {
+    const spans = textDiv.current.querySelectorAll('span');
+    let str = '';
+    spans.forEach((element) => {
+      str += element.innerText + '\n';
+    });
+
+    axios
+      .post('http://localhost:5000/postText', {
+        text: str,
+      })
+      .then(({ data }) => console.log(data))
+      .catch((error) => console.log(error));
+  };
   return (
-    <div className="transcript-box">
-      {transcriptArray.map((transcriptItem, overallIndex) => {
-        const { speaker, text } = transcriptItem;
-        const parsedTextElements = mapTranscriptTextToElements(
-          text,
-          keywordInfo,
-          overallIndex,
-        );
-        // let characters = [];
-        // let characters = parsedTextElements.map((element) => element.text);
-        // characters = characters.filter((element) => element != undefined);
-        // getText(characters.join(''));
-        // getLength(characters.join('').length);
+    <>
+      <div ref={textDiv} className="transcript-box">
+        {transcriptArray.map((transcriptItem, overallIndex) => {
+          const { speaker, text } = transcriptItem;
+          const parsedTextElements = mapTranscriptTextToElements(
+            text,
+            keywordInfo,
+            overallIndex,
+          );
+          // let characters = [];
+          // let characters = parsedTextElements.map((element) => element.text);
+          // characters = characters.filter((element) => element != undefined);
+          // getText(characters.join(''));
+          // getLength(characters.join('').length);
 
-        const result = parsedTextElements.map((element) => element?.text);
+          // console.log('new line' + result);
 
-        // console.log('new line' + result);
+          return (
+            <div key={`transcript-${overallIndex}`}>
+              {speaker !== null && (
+                <>
+                  <span className={`speaker-label--${speaker}`}>
+                    {`Speaker ${speaker}: `}
+                  </span>
+                </>
+              )}
+              {parsedTextElements.map((element, elementIndex) => {
+                if (!element) {
+                  return null;
+                }
 
-        let randomString = '';
-
-        return (
-          <div key={`transcript-${overallIndex}`}>
-            {speaker !== null && (
-              <>
-                <span className={`speaker-label--${speaker}`}>
-                  {`Speaker ${speaker}: `}
-                </span>
-              </>
-            )}
-            {parsedTextElements.map((element, elementIndex) => {
-              if (!element) {
+                if (element.type === 'normal') {
+                  // console.log('NEW LINE ' + element.text);
+                  // characters.push(element.text);
+                  // console.log('NEW LINE ' + characters.join(''));
+                  return (
+                    <>
+                      <span
+                        key={`transcript-text-${overallIndex}-${elementIndex}`}
+                      >{`${element.text}`}</span>
+                    </>
+                  );
+                } else if (element.type === 'keyword') {
+                  return (
+                    <TooltipDefinition
+                      align="center"
+                      direction="top"
+                      key={`transcript-keyword-${overallIndex}-${elementIndex}`}
+                      tooltipText={
+                        <KeywordTooltip
+                          confidence={element.confidence}
+                          startTime={element.startTime}
+                          endTime={element.endTime}
+                        />
+                      }
+                      triggerClassName="keyword-info-trigger"
+                    >
+                      {element.text}
+                    </TooltipDefinition>
+                  );
+                }
                 return null;
-              }
-
-              setTextToPost((prev) => `${prev}${element.text}`);
-              console.log('NEW LINE' + textToPost);
-
-              if (element.type === 'normal') {
-                // console.log('NEW LINE ' + element.text);
-                // characters.push(element.text);
-                // console.log('NEW LINE ' + characters.join(''));
-                return (
-                  <>
-                    <span
-                      key={`transcript-text-${overallIndex}-${elementIndex}`}
-                    >{`${element.text}`}</span>
-                  </>
-                );
-              } else if (element.type === 'keyword') {
-                return (
-                  <TooltipDefinition
-                    align="center"
-                    direction="top"
-                    key={`transcript-keyword-${overallIndex}-${elementIndex}`}
-                    tooltipText={
-                      <KeywordTooltip
-                        confidence={element.confidence}
-                        startTime={element.startTime}
-                        endTime={element.endTime}
-                      />
-                    }
-                    triggerClassName="keyword-info-trigger"
-                  >
-                    {element.text}
-                  </TooltipDefinition>
-                );
-              }
-              return null;
-            })}
-          </div>
-        );
-      })}
-    </div>
+              })}
+            </div>
+          );
+        })}
+      </div>
+      <Button onClick={handleGo} type="button">
+        Go
+      </Button>
+    </>
   );
 };
 
